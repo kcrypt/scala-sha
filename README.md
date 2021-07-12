@@ -16,6 +16,10 @@ This assumption also included inside API: it consumes whole provided array, it a
 
 If you need fast and secure hash function for scala I suggest to use [blak3](https://github.com/catap/scala-blake3).
 
+You can use it as
+```
+libraryDependencies += "ky.korins" %%% "sha" % "x.x.x"
+```
 The latest version is ![maven-central]
 
 API is pretty simple and quite limited :)
