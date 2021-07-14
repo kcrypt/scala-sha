@@ -23,6 +23,10 @@ class Keccak(private var len: Int) extends Hash {
 
   private val S: Array[Array[Long]] = Array.ofDim[Long](5, 5)
 
+  private val C: Array[Long] = new Array[Long](5)
+  private val D: Array[Long] = new Array[Long](5)
+  private val B: Array[Array[Long]] = Array.ofDim[Long](5, 5)
+
   def update(bytes: Array[Byte], off: Int, len: Int): Unit = {
     var i = 0
     while (i < len) {
@@ -47,9 +51,6 @@ class Keccak(private var len: Int) extends Hash {
   }
 
   private def transform(): Unit = {
-    val C = new Array[Long](5)
-    val D = new Array[Long](5)
-    val B = Array.ofDim[Long](5, 5)
     var k = 0
     while (k < 24) {
       C(0) = S(0)(0) ^ S(0)(1) ^ S(0)(2) ^ S(0)(3) ^ S(0)(4)
