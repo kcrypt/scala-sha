@@ -14,18 +14,13 @@ package ky.korins.sha
  * Keccak is quite universal and requires the sate which I kept inside an object.
  */
 class Keccak(private var len: Int) extends Hash {
-  import Keccak._
   import java.lang.Long.rotateLeft
 
   private var length: Long = 0
 
   private val rate: Int = 200 - 2 * len
 
-  private val S: Array[Array[Long]] = Array.ofDim[Long](5, 5)
-
-  private val C: Array[Long] = new Array[Long](5)
-  private val D: Array[Long] = new Array[Long](5)
-  private val B: Array[Array[Long]] = Array.ofDim[Long](5, 5)
+  private val S: Array[Long] = new Array[Long](25)
 
   def update(bytes: Array[Byte], off: Int, len: Int): Unit = {
     var i = 0
@@ -42,7 +37,7 @@ class Keccak(private var len: Int) extends Hash {
     val i = cnt % 5
     val j = cnt / 5
 
-    S(i)(j) ^= ((byt & 0xff).toLong << (8 * b))
+    S(i * 5 + j) ^= ((byt & 0xff).toLong << (8 * b))
     length += 1
 
     if ((length % rate) == 0) {
@@ -50,65 +45,119 @@ class Keccak(private var len: Int) extends Hash {
     }
   }
 
+  @inline
+  private def transformRound(): Unit = {
+    val C_0 = S(0) ^ S(1) ^ S(2) ^ S(3) ^ S(4)
+    val C_1 = S(5) ^ S(6) ^ S(7) ^ S(8) ^ S(9)
+    val C_2 = S(10) ^ S(11) ^ S(12) ^ S(13) ^ S(14)
+    val C_3 = S(15) ^ S(16) ^ S(17) ^ S(18) ^ S(19)
+    val C_4 = S(20) ^ S(21) ^ S(22) ^ S(23) ^ S(24)
+    val D_0 = C_4 ^ rotateLeft(C_1, 1)
+    val D_1 = C_0 ^ rotateLeft(C_2, 1)
+    val D_2 = C_1 ^ rotateLeft(C_3, 1)
+    val D_3 = C_2 ^ rotateLeft(C_4, 1)
+    val D_4 = C_3 ^ rotateLeft(C_0, 1)
+    val B_0_0 = S(0) ^ D_0
+    val B_1_3 = rotateLeft(S(1) ^ D_0, 36)
+    val B_2_1 = rotateLeft(S(2) ^ D_0, 3)
+    val B_3_4 = rotateLeft(S(3) ^ D_0, 41)
+    val B_4_2 = rotateLeft(S(4) ^ D_0, 18)
+    val B_0_2 = rotateLeft(S(5) ^ D_1, 1)
+    val B_1_0 = rotateLeft(S(6) ^ D_1, 44)
+    val B_2_3 = rotateLeft(S(7) ^ D_1, 10)
+    val B_3_1 = rotateLeft(S(8) ^ D_1, 45)
+    val B_4_4 = rotateLeft(S(9) ^ D_1, 2)
+    val B_0_4 = rotateLeft(S(10) ^ D_2, 62)
+    val B_1_2 = rotateLeft(S(11) ^ D_2, 6)
+    val B_2_0 = rotateLeft(S(12) ^ D_2, 43)
+    val B_3_3 = rotateLeft(S(13) ^ D_2, 15)
+    val B_4_1 = rotateLeft(S(14) ^ D_2, 61)
+    val B_0_1 = rotateLeft(S(15) ^ D_3, 28)
+    val B_1_4 = rotateLeft(S(16) ^ D_3, 55)
+    val B_2_2 = rotateLeft(S(17) ^ D_3, 25)
+    val B_3_0 = rotateLeft(S(18) ^ D_3, 21)
+    val B_4_3 = rotateLeft(S(19) ^ D_3, 56)
+    val B_0_3 = rotateLeft(S(20) ^ D_4, 27)
+    val B_1_1 = rotateLeft(S(21) ^ D_4, 20)
+    val B_2_4 = rotateLeft(S(22) ^ D_4, 39)
+    val B_3_2 = rotateLeft(S(23) ^ D_4, 8)
+    val B_4_0 = rotateLeft(S(24) ^ D_4, 14)
+    S(0) = B_0_0 ^ (~B_1_0 & B_2_0)
+    S(1) = B_0_1 ^ (~B_1_1 & B_2_1)
+    S(2) = B_0_2 ^ (~B_1_2 & B_2_2)
+    S(3) = B_0_3 ^ (~B_1_3 & B_2_3)
+    S(4) = B_0_4 ^ (~B_1_4 & B_2_4)
+    S(5) = B_1_0 ^ (~B_2_0 & B_3_0)
+    S(6) = B_1_1 ^ (~B_2_1 & B_3_1)
+    S(7) = B_1_2 ^ (~B_2_2 & B_3_2)
+    S(8) = B_1_3 ^ (~B_2_3 & B_3_3)
+    S(9) = B_1_4 ^ (~B_2_4 & B_3_4)
+    S(10) = B_2_0 ^ (~B_3_0 & B_4_0)
+    S(11) = B_2_1 ^ (~B_3_1 & B_4_1)
+    S(12) = B_2_2 ^ (~B_3_2 & B_4_2)
+    S(13) = B_2_3 ^ (~B_3_3 & B_4_3)
+    S(14) = B_2_4 ^ (~B_3_4 & B_4_4)
+    S(15) = B_3_0 ^ (~B_4_0 & B_0_0)
+    S(16) = B_3_1 ^ (~B_4_1 & B_0_1)
+    S(17) = B_3_2 ^ (~B_4_2 & B_0_2)
+    S(18) = B_3_3 ^ (~B_4_3 & B_0_3)
+    S(19) = B_3_4 ^ (~B_4_4 & B_0_4)
+    S(20) = B_4_0 ^ (~B_0_0 & B_1_0)
+    S(21) = B_4_1 ^ (~B_0_1 & B_1_1)
+    S(22) = B_4_2 ^ (~B_0_2 & B_1_2)
+    S(23) = B_4_3 ^ (~B_0_3 & B_1_3)
+    S(24) = B_4_4 ^ (~B_0_4 & B_1_4)
+  }
+
   private def transform(): Unit = {
-    var k = 0
-    while (k < 24) {
-      C(0) = S(0)(0) ^ S(0)(1) ^ S(0)(2) ^ S(0)(3) ^ S(0)(4)
-      C(1) = S(1)(0) ^ S(1)(1) ^ S(1)(2) ^ S(1)(3) ^ S(1)(4)
-      C(2) = S(2)(0) ^ S(2)(1) ^ S(2)(2) ^ S(2)(3) ^ S(2)(4)
-      C(3) = S(3)(0) ^ S(3)(1) ^ S(3)(2) ^ S(3)(3) ^ S(3)(4)
-      C(4) = S(4)(0) ^ S(4)(1) ^ S(4)(2) ^ S(4)(3) ^ S(4)(4)
-      D(0) = C(4) ^ rotateLeft(C(1), 1)
-      D(1) = C(0) ^ rotateLeft(C(2), 1)
-      D(2) = C(1) ^ rotateLeft(C(3), 1)
-      D(3) = C(2) ^ rotateLeft(C(4), 1)
-      D(4) = C(3) ^ rotateLeft(C(0), 1)
-      var i = 0
-      while (i < 5) {
-        var j = 0
-        while (j < 5) {
-          S(i)(j) ^= D(i)
-          j += 1
-        }
-        i += 1
-      }
-      B(0)(0) = S(0)(0)
-      B(1)(3) = rotateLeft(S(0)(1), 36)
-      B(2)(1) = rotateLeft(S(0)(2), 3)
-      B(3)(4) = rotateLeft(S(0)(3), 41)
-      B(4)(2) = rotateLeft(S(0)(4), 18)
-      B(0)(2) = rotateLeft(S(1)(0), 1)
-      B(1)(0) = rotateLeft(S(1)(1), 44)
-      B(2)(3) = rotateLeft(S(1)(2), 10)
-      B(3)(1) = rotateLeft(S(1)(3), 45)
-      B(4)(4) = rotateLeft(S(1)(4), 2)
-      B(0)(4) = rotateLeft(S(2)(0), 62)
-      B(1)(2) = rotateLeft(S(2)(1), 6)
-      B(2)(0) = rotateLeft(S(2)(2), 43)
-      B(3)(3) = rotateLeft(S(2)(3), 15)
-      B(4)(1) = rotateLeft(S(2)(4), 61)
-      B(0)(1) = rotateLeft(S(3)(0), 28)
-      B(1)(4) = rotateLeft(S(3)(1), 55)
-      B(2)(2) = rotateLeft(S(3)(2), 25)
-      B(3)(0) = rotateLeft(S(3)(3), 21)
-      B(4)(3) = rotateLeft(S(3)(4), 56)
-      B(0)(3) = rotateLeft(S(4)(0), 27)
-      B(1)(1) = rotateLeft(S(4)(1), 20)
-      B(2)(4) = rotateLeft(S(4)(2), 39)
-      B(3)(2) = rotateLeft(S(4)(3), 8)
-      B(4)(0) = rotateLeft(S(4)(4), 14)
-      i = 0
-      while (i < 5) {
-        var j = 0
-        while (j < 5) {
-          S(i)(j) = B(i)(j) ^ (~B((i + 1) % 5)(j) & B((i + 2) % 5)(j))
-          j += 1
-        }
-        i += 1
-      }
-      S(0)(0) ^= RC(k)
-      k += 1
-    }
+    transformRound()
+    S(0) ^= 0x0000000000000001L
+    transformRound()
+    S(0) ^= 0x0000000000008082L
+    transformRound()
+    S(0) ^= 0x800000000000808aL
+    transformRound()
+    S(0) ^= 0x8000000080008000L
+    transformRound()
+    S(0) ^= 0x000000000000808bL
+    transformRound()
+    S(0) ^= 0x0000000080000001L
+    transformRound()
+    S(0) ^= 0x8000000080008081L
+    transformRound()
+    S(0) ^= 0x8000000000008009L
+    transformRound()
+    S(0) ^= 0x000000000000008aL
+    transformRound()
+    S(0) ^= 0x0000000000000088L
+    transformRound()
+    S(0) ^= 0x0000000080008009L
+    transformRound()
+    S(0) ^= 0x000000008000000aL
+    transformRound()
+    S(0) ^= 0x000000008000808bL
+    transformRound()
+    S(0) ^= 0x800000000000008bL
+    transformRound()
+    S(0) ^= 0x8000000000008089L
+    transformRound()
+    S(0) ^= 0x8000000000008003L
+    transformRound()
+    S(0) ^= 0x8000000000008002L
+    transformRound()
+    S(0) ^= 0x8000000000000080L
+    transformRound()
+    S(0) ^= 0x000000000000800aL
+    transformRound()
+    S(0) ^= 0x800000008000000aL
+    transformRound()
+    S(0) ^= 0x8000000080008081L
+    transformRound()
+    S(0) ^= 0x8000000000008080L
+    transformRound()
+    S(0) ^= 0x0000000080000001L
+    transformRound()
+    S(0) ^= 0x8000000080008008L
   }
 
   def finish(hashed: Array[Byte], off: Int): Unit =
@@ -143,7 +192,7 @@ class Keccak(private var len: Int) extends Hash {
       while (j < 5 && !done) {
         i = 0
         while (i < 5 && !done) {
-          var el = S(i)(j)
+          var el = S(i * 5 + j)
           k = 0
           while (k < 8 && !done) {
             hashed(m + off) = (el & 0xff).toByte
@@ -166,19 +215,6 @@ class Keccak(private var len: Int) extends Hash {
       transform()
     }
   }
-}
-
-private[sha] object Keccak {
-  val RC: Array[Long] = Array(
-    0x0000000000000001L, 0x0000000000008082L, 0x800000000000808aL,
-    0x8000000080008000L, 0x000000000000808bL, 0x0000000080000001L,
-    0x8000000080008081L, 0x8000000000008009L, 0x000000000000008aL,
-    0x0000000000000088L, 0x0000000080008009L, 0x000000008000000aL,
-    0x000000008000808bL, 0x800000000000008bL, 0x8000000000008089L,
-    0x8000000000008003L, 0x8000000000008002L, 0x8000000000000080L,
-    0x000000000000800aL, 0x800000008000000aL, 0x8000000080008081L,
-    0x8000000000008080L, 0x0000000080000001L, 0x8000000080008008L
-  )
 }
 
 sealed trait Sha3 {

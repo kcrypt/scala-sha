@@ -82,10 +82,10 @@ ShaBenchmark.sha1          1024  avgt    5    4,285 ± 0,002  us/op
 ShaBenchmark.sha1         16384  avgt    5   64,380 ± 0,022  us/op
 ShaBenchmark.sha256        1024  avgt    5    4,330 ± 0,005  us/op
 ShaBenchmark.sha256       16384  avgt    5   63,293 ± 0,024  us/op
-ShaBenchmark.sha3_256      1024  avgt    5   14,963 ± 0,270  us/op
-ShaBenchmark.sha3_256     16384  avgt    5  178,224 ± 3,964  us/op
-ShaBenchmark.sha3_512      1024  avgt    5   22,308 ± 0,393  us/op
-ShaBenchmark.sha3_512     16384  avgt    5  276,056 ± 8,138  us/op
+ShaBenchmark.sha3_256      1024  avgt    5    5,919 ± 0,019  us/op
+ShaBenchmark.sha3_256     16384  avgt    5   84,952 ± 0,468  us/op
+ShaBenchmark.sha3_512      1024  avgt    5    8,114 ± 0,078  us/op
+ShaBenchmark.sha3_512     16384  avgt    5  118,706 ± 0,924  us/op
 ShaBenchmark.sha512        1024  avgt    5    3,168 ± 0,007  us/op
 ShaBenchmark.sha512       16384  avgt    5   44,630 ± 0,017  us/op
 ```

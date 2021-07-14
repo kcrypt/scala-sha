@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [unreleased]
+- Improved performance of Keccak / SHA3
 
 ## [1.1.1] - 2021-07-14
 - Added missed SHA3 objects
