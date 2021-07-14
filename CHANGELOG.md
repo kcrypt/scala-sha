@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [unreleased]
+- Implemented block hashing.
 
 ## [1.0.0] - 2021-07-11
 - The first public release as dedicated project.

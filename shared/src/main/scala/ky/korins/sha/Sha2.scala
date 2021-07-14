@@ -9,11 +9,196 @@
 package ky.korins.sha
 
 /**
- * Quite ugly but fast enough implementation of SHA-2 family
+ * Quite ugly but fast enough implementation of SHA-2 for 32 bit case.
+ *
+ * This implementation isn't thread safe.
  */
-sealed trait Sha2 {
+sealed trait Sha2_32bit extends BlockedHash[Array[Int]] {
+  import Sha2._
+  import java.lang.Integer.rotateRight
 
-  private val K_32: Array[Int] = Array(
+  protected val H: Array[Int]
+
+  protected val len: Int
+
+  protected val words = new Array[Int](64)
+  protected val block = new Array[Byte](64)
+
+  override def finish(hashed: Array[Byte], off: Int): Unit = {
+    val padded = padding_32bit(messageLen)
+    update(padded, 0, padded.length)
+
+    var i = 0
+    while (i < len) {
+      val c = 4 * i
+      hashed(c + off) = ((H(i) >>> 56) & 0xff).toByte
+      hashed(c + 1 + off) = ((H(i) >>> (56 - 8)) & 0xff).toByte
+      hashed(c + 2 + off) = ((H(i) >>> (56 - 16)) & 0xff).toByte
+      hashed(c + 3 + off) = ((H(i) >>> (56 - 24)) & 0xff).toByte
+      i += 1
+    }
+  }
+
+  protected def finishBlock(block: Array[Byte], off: Int): Unit = {
+    var j = 0
+    while (j < 16) {
+      words(j) = 0
+      var k = 0
+      while (k < 4) {
+        words(j) |= ((block(j * 4 + k + off) & 0x000000ff) << (24 - k * 8))
+        k += 1
+      }
+      j += 1
+    }
+
+    while (j < 64) {
+      val s0 = rotateRight(words(j - 15), 7) ^
+        rotateRight(words(j - 15), 18) ^ (words(j - 15) >>> 3)
+      val s1 =
+        rotateRight(words(j - 2), 17) ^
+          rotateRight(words(j - 2), 19) ^ (words(j - 2) >>> 10)
+      words(j) = words(j - 16) + s0 + words(j - 7) + s1
+      j += 1
+    }
+
+    var a = H(0)
+    var b = H(1)
+    var c = H(2)
+    var d = H(3)
+    var e = H(4)
+    var f = H(5)
+    var g = H(6)
+    var h = H(7)
+    j = 0
+    while (j < 64) {
+      val s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22)
+      val maj = (a & b) ^ (a & c) ^ (b & c)
+      val t2 = s0 + maj
+      val s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25)
+      val ch = (e & f) ^ (~e & g)
+      val t1 = h + s1 + ch + K_32bit(j) + words(j)
+      h = g
+      g = f
+      f = e
+      e = d + t1
+      d = c
+      c = b
+      b = a
+      a = t1 + t2
+      j += 1
+    }
+
+    H(0) += a
+    H(1) += b
+    H(2) += c
+    H(3) += d
+    H(4) += e
+    H(5) += f
+    H(6) += g
+    H(7) += h
+  }
+}
+
+/**
+ * Quite ugly but fast enough implementation of SHA-2 for 64 bit case.
+ *
+ * This implementation isn't thread safe.
+ */
+sealed trait Sha2_64bit extends BlockedHash[Array[Long]] {
+  import Sha2._
+  import java.lang.Long.rotateRight
+
+  protected val H: Array[Long]
+
+  protected val len: Int
+
+  protected val words = new Array[Long](80)
+  protected val block = new Array[Byte](128)
+
+  override def finish(hashed: Array[Byte], off: Int): Unit = {
+    val padded = padding_64bit(messageLen)
+    update(padded, 0, padded.length)
+
+    var i = 0
+    while (i < len) {
+      val c = 8 * i
+      hashed(c + off) = ((H(i) >>> 56) & 0xff).toByte
+      hashed(c + 1 + off) = ((H(i) >>> (56 - 8)) & 0xff).toByte
+      hashed(c + 2 + off) = ((H(i) >>> (56 - 16)) & 0xff).toByte
+      hashed(c + 3 + off) = ((H(i) >>> (56 - 24)) & 0xff).toByte
+      hashed(c + 4 + off) = ((H(i) >>> (56 - 32)) & 0xff).toByte
+      hashed(c + 5 + off) = ((H(i) >>> (56 - 40)) & 0xff).toByte
+      hashed(c + 6 + off) = ((H(i) >>> (56 - 48)) & 0xff).toByte
+      hashed(c + 7 + off) = (H(i) & 0xff).toByte
+      i += 1
+    }
+  }
+
+  protected def finishBlock(block: Array[Byte], off: Int): Unit = {
+    var j = 0
+    while (j < 16) {
+      words(j) = 0
+      var k = 0
+      while (k < 8) {
+        words(j) |= ((block(
+          j * 8 + k + off
+        ) & 0x00000000000000ffL) << (56 - k * 8))
+        k += 1
+      }
+      j += 1
+    }
+
+    while (j < 80) {
+      val s0 =
+        rotateRight(words(j - 15), 1) ^
+          rotateRight(words(j - 15), 8) ^ (words(j - 15) >>> 7)
+      val s1 =
+        rotateRight(words(j - 2), 19) ^
+          rotateRight(words(j - 2), 61) ^ (words(j - 2) >>> 6)
+      words(j) = words(j - 16) + s0 + words(j - 7) + s1
+      j += 1
+    }
+
+    var a = H(0)
+    var b = H(1)
+    var c = H(2)
+    var d = H(3)
+    var e = H(4)
+    var f = H(5)
+    var g = H(6)
+    var h = H(7)
+    j = 0
+    while (j < 80) {
+      val s0 = rotateRight(a, 28) ^ rotateRight(a, 34) ^ rotateRight(a, 39)
+      val maj = (a & b) ^ (a & c) ^ (b & c)
+      val t2 = s0 + maj
+      val s1 = rotateRight(e, 14) ^ rotateRight(e, 18) ^ rotateRight(e, 41)
+      val ch = (e & f) ^ (~e & g)
+      val t1 = h + s1 + ch + K_64bit(j) + words(j)
+      h = g
+      g = f
+      f = e
+      e = d + t1
+      d = c
+      c = b
+      b = a
+      a = t1 + t2
+      j += 1
+    }
+
+    H(0) += a
+    H(1) += b
+    H(2) += c
+    H(3) += d
+    H(4) += e
+    H(5) += f
+    H(6) += g
+    H(7) += h
+  }
+}
+
+private[sha] object Sha2 {
+  val K_32bit: Array[Int] = Array(
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
     0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
     0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
@@ -27,7 +212,7 @@ sealed trait Sha2 {
     0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
   )
 
-  private val K_64: Array[Long] = Array(
+  val K_64bit: Array[Long] = Array(
     0x428a2f98d728ae22L, 0x7137449123ef65cdL, 0xb5c0fbcfec4d3b2fL,
     0xe9b5dba58189dbbcL, 0x3956c25bf348b538L, 0x59f111f1b605d019L,
     0x923f82a4af194f9bL, 0xab1c5ed5da6d8118L, 0xd807aa98a3030242L,
@@ -57,234 +242,90 @@ sealed trait Sha2 {
     0x5fcb6fab3ad6faecL, 0x6c44198c4a475817L
   )
 
-  def hash_64(message: Array[Byte], len: Int, H: Array[Long]): Array[Byte] = {
-    import java.lang.Long.rotateRight
-
-    val words = new Array[Long](80)
-    val hashed = new Array[Byte](len * 8)
-    val block = new Array[Byte](128)
-
-    val padded = Paddings.padding_64(message)
-    val blocks = padded.length / 128
-
-    var i = 0
-    while (i < blocks) {
-      System.arraycopy(padded, 128 * i, block, 0, 128)
-
-      var j = 0
-      while (j < 16) {
-        words(j) = 0
-        var k = 0
-        while (k < 8) {
-          words(j) |= ((block(j * 8 + k) & 0x00000000000000ffL) << (56 - k * 8))
-          k += 1
-        }
-        j += 1
-      }
-
-      while (j < 80) {
-        val s0 =
-          rotateRight(words(j - 15), 1) ^ rotateRight(
-            words(j - 15),
-            8
-          ) ^ (words(j - 15) >>> 7)
-        val s1 =
-          rotateRight(words(j - 2), 19) ^ rotateRight(
-            words(j - 2),
-            61
-          ) ^ (words(j - 2) >>> 6)
-        words(j) = words(j - 16) + s0 + words(j - 7) + s1
-        j += 1
-      }
-
-      var a = H(0)
-      var b = H(1)
-      var c = H(2)
-      var d = H(3)
-      var e = H(4)
-      var f = H(5)
-      var g = H(6)
-      var h = H(7)
-      j = 0
-      while (j < 80) {
-        val s0 = rotateRight(a, 28) ^ rotateRight(a, 34) ^ rotateRight(a, 39)
-        val maj = (a & b) ^ (a & c) ^ (b & c)
-        val t2 = s0 + maj
-        val s1 = rotateRight(e, 14) ^ rotateRight(e, 18) ^ rotateRight(e, 41)
-        val ch = (e & f) ^ (~e & g)
-        val t1 = h + s1 + ch + K_64(j) + words(j)
-        h = g
-        g = f
-        f = e
-        e = d + t1
-        d = c
-        c = b
-        b = a
-        a = t1 + t2
-        j += 1
-      }
-
-      H(0) += a
-      H(1) += b
-      H(2) += c
-      H(3) += d
-      H(4) += e
-      H(5) += f
-      H(6) += g
-      H(7) += h
-      i += 1
-    }
-
-    i = 0
-    while (i < len) {
-      val c = 8 * i
-      hashed(c) = ((H(i) >>> 56) & 0xff).toByte
-      hashed(c + 1) = ((H(i) >>> (56 - 8)) & 0xff).toByte
-      hashed(c + 2) = ((H(i) >>> (56 - 16)) & 0xff).toByte
-      hashed(c + 3) = ((H(i) >>> (56 - 24)) & 0xff).toByte
-      hashed(c + 4) = ((H(i) >>> (56 - 32)) & 0xff).toByte
-      hashed(c + 5) = ((H(i) >>> (56 - 40)) & 0xff).toByte
-      hashed(c + 6) = ((H(i) >>> (56 - 48)) & 0xff).toByte
-      hashed(c + 7) = (H(i) & 0xff).toByte
-      i += 1
-    }
-
-    hashed
-  }
-
-  protected def hash_32(
-    message: Array[Byte],
-    len: Int,
-    H: Array[Int]
-  ): Array[Byte] = {
-    import java.lang.Integer.rotateRight
-
-    val words: Array[Int] = new Array[Int](64)
-    val hashed = new Array[Byte](4 * len)
-    val block = new Array[Byte](64)
-
-    val padded = Paddings.padding_32(message)
-    val blocks = padded.length / 64
-
-    var i = 0
-    while (i < blocks) {
-      System.arraycopy(padded, 64 * i, block, 0, 64)
-
-      var j = 0
-      while (j < 16) {
-        words(j) = 0
-        var k = 0
-        while (k < 4) {
-          words(j) |= ((block(j * 4 + k) & 0x000000ff) << (24 - k * 8))
-          k += 1
-        }
-        j += 1
-      }
-
-      while (j < 64) {
-        val s0 =
-          rotateRight(words(j - 15), 7) ^ rotateRight(
-            words(j - 15),
-            18
-          ) ^ (words(j - 15) >>> 3)
-        val s1 =
-          rotateRight(words(j - 2), 17) ^ rotateRight(
-            words(j - 2),
-            19
-          ) ^ (words(j - 2) >>> 10)
-        words(j) = words(j - 16) + s0 + words(j - 7) + s1
-        j += 1
-      }
-
-      var a = H(0)
-      var b = H(1)
-      var c = H(2)
-      var d = H(3)
-      var e = H(4)
-      var f = H(5)
-      var g = H(6)
-      var h = H(7)
-      j = 0
-      while (j < 64) {
-        val s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22)
-        val maj = (a & b) ^ (a & c) ^ (b & c)
-        val t2 = s0 + maj
-        val s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25)
-        val ch = (e & f) ^ (~e & g)
-        val t1 = h + s1 + ch + K_32(j) + words(j)
-        h = g
-        g = f
-        f = e
-        e = d + t1
-        d = c
-        c = b
-        b = a
-        a = t1 + t2
-        j += 1
-      }
-
-      H(0) += a
-      H(1) += b
-      H(2) += c
-      H(3) += d
-      H(4) += e
-      H(5) += f
-      H(6) += g
-      H(7) += h
-      i += 1
-    }
-
-    i = 0
-    while (i < len) {
-      val c = 4 * i
-      hashed(c) = ((H(i) >>> 56) & 0xff).toByte
-      hashed(c + 1) = ((H(i) >>> (56 - 8)) & 0xff).toByte
-      hashed(c + 2) = ((H(i) >>> (56 - 16)) & 0xff).toByte
-      hashed(c + 3) = ((H(i) >>> (56 - 24)) & 0xff).toByte
-      i += 1
-    }
-
-    hashed
-  }
 }
 
-object Sha2_224 extends Sha2 {
-  private val H: Array[Int] = Array(
+class Sha2_224 extends Sha2_32bit {
+  override protected val H: Array[Int] = Array(
     0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939, 0xffc00b31, 0x68581511,
     0x64f98fa7, 0xbefa4fa4
   )
-  def hash(message: Array[Byte]): Array[Byte] =
-    hash_32(message, 7, H.clone())
+
+  override protected val len: Int = 7
 }
 
-object Sha2_256 extends Sha2 {
-  private val H: Array[Int] = Array(
+object Sha2_224 {
+  val HASH_SIZE: Int = 28
+
+  def hash(message: Array[Byte]): Array[Byte] = {
+    val sha2_224 = new Sha2_224()
+    sha2_224.update(message, 0, message.length)
+    val hashed = new Array[Byte](HASH_SIZE)
+    sha2_224.finish(hashed, 0)
+    hashed
+  }
+}
+
+class Sha2_256 extends Sha2_32bit {
+  override protected val H: Array[Int] = Array(
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c,
     0x1f83d9ab, 0x5be0cd19
   )
 
-  def hash(message: Array[Byte]): Array[Byte] =
-    hash_32(message, 8, H.clone())
+  override protected val len: Int = 8
 }
 
-object Sha2_384 extends Sha2 {
-  private val H: Array[Long] = Array(
+object Sha2_256 {
+  val HASH_SIZE: Int = 32
+
+  def hash(message: Array[Byte]): Array[Byte] = {
+    val sha2_256 = new Sha2_256()
+    sha2_256.update(message, 0, message.length)
+    val hashed = new Array[Byte](HASH_SIZE)
+    sha2_256.finish(hashed, 0)
+    hashed
+  }
+}
+
+class Sha2_384 extends Sha2_64bit {
+  override protected val H: Array[Long] = Array(
     0xcbbb9d5dc1059ed8L, 0x629a292a367cd507L, 0x9159015a3070dd17L,
     0x152fecd8f70e5939L, 0x67332667ffc00b31L, 0x8eb44a8768581511L,
     0xdb0c2e0d64f98fa7L, 0x47b5481dbefa4fa4L
   )
 
-  def hash(message: Array[Byte]): Array[Byte] =
-    hash_64(message, 6, H.clone())
+  override protected val len: Int = 6
 }
 
-object Sha2_512 extends Sha2 {
-  private val H: Array[Long] = Array(
+object Sha2_384 {
+  val HASH_SIZE: Int = 48
+
+  def hash(message: Array[Byte]): Array[Byte] = {
+    val sha2_384 = new Sha2_384()
+    sha2_384.update(message, 0, message.length)
+    val hashed = new Array[Byte](HASH_SIZE)
+    sha2_384.finish(hashed, 0)
+    hashed
+  }
+}
+
+class Sha2_512 extends Sha2_64bit {
+  override protected val H: Array[Long] = Array(
     0x6a09e667f3bcc908L, 0xbb67ae8584caa73bL, 0x3c6ef372fe94f82bL,
     0xa54ff53a5f1d36f1L, 0x510e527fade682d1L, 0x9b05688c2b3e6c1fL,
     0x1f83d9abfb41bd6bL, 0x5be0cd19137e2179L
   )
 
-  def hash(message: Array[Byte]): Array[Byte] =
-    hash_64(message, 8, H.clone())
+  override protected val len: Int = 8
+}
+
+object Sha2_512 {
+  val HASH_SIZE: Int = 64
+
+  def hash(message: Array[Byte]): Array[Byte] = {
+    val sha2_512 = new Sha2_512()
+    sha2_512.update(message, 0, message.length)
+    val hashed = new Array[Byte](HASH_SIZE)
+    sha2_512.finish(hashed, 0)
+    hashed
+  }
 }

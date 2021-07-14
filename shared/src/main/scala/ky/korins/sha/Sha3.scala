@@ -13,7 +13,7 @@ package ky.korins.sha
  *
  * Keccak is quite universal and requires the sate which I kept inside an object.
  */
-class Keccak(private var len: Int) {
+class Keccak(private var len: Int) extends Hash {
   import Keccak._
   import java.lang.Long.rotateLeft
 
@@ -23,10 +23,10 @@ class Keccak(private var len: Int) {
 
   private val S: Array[Array[Long]] = Array.ofDim[Long](5, 5)
 
-  def process(bytes: Array[Byte]): Unit = {
+  def update(bytes: Array[Byte], off: Int, len: Int): Unit = {
     var i = 0
-    while (i < bytes.length) {
-      process(bytes(i).toInt)
+    while (i < len) {
+      process(bytes(i + off).toInt)
       i += 1
     }
   }
@@ -110,13 +110,13 @@ class Keccak(private var len: Int) {
     }
   }
 
-  def hash(): Array[Byte] =
-    squeeze(mask = 0x06, len = len)
+  def finish(hashed: Array[Byte], off: Int): Unit =
+    squeeze(mask = 0x06, hashed = hashed, off = off, len = len)
 
-  def shake(outputLen: Int): Array[Byte] =
-    squeeze(mask = 0x1f, len = outputLen)
+  def finish(hashed: Array[Byte], off: Int, len: Int): Unit =
+    squeeze(mask = 0x1f, hashed = hashed, off = off, len = len)
 
-  private def squeeze(mask: Int, len: Int): Array[Byte] = {
+  def squeeze(mask: Int, hashed: Array[Byte], off: Int, len: Int): Unit = {
     val q: Int = rate - (length % rate).toInt
     if (q == 1) {
       process(0x80 + mask)
@@ -127,8 +127,10 @@ class Keccak(private var len: Int) {
       }
       process(0x80)
     }
+    squeeze(hashed = hashed, off = off, len = len)
+  }
 
-    val buff = new Array[Byte](len)
+  def squeeze(hashed: Array[Byte], off: Int, len: Int): Unit = {
     var done = false
     var i = 0
     var j = 0
@@ -143,7 +145,7 @@ class Keccak(private var len: Int) {
           var el = S(i)(j)
           k = 0
           while (k < 8 && !done) {
-            buff(m) = (el & 0xff).toByte
+            hashed(m + off) = (el & 0xff).toByte
             m += 1
             if (m >= len || (m % rate) == 0) {
               done = true
@@ -162,7 +164,6 @@ class Keccak(private var len: Int) {
 
       transform()
     }
-    buff
   }
 }
 
@@ -179,50 +180,50 @@ private[sha] object Keccak {
   )
 }
 
-object Sha3_224 {
+sealed trait Sha3 {
+  val HASH_SIZE: Int
+
   def hash(message: Array[Byte]): Array[Byte] = {
-    val keccak = new Keccak(28)
-    keccak.process(message)
-    keccak.hash()
+    val keccak = new Keccak(HASH_SIZE)
+    keccak.update(message, 0, message.length)
+    val hashed = new Array[Byte](HASH_SIZE)
+    keccak.finish(hashed, 0)
+    hashed
   }
 }
 
-object Sha3_256 {
-  def hash(message: Array[Byte]): Array[Byte] = {
-    val keccak = new Keccak(32)
-    keccak.process(message)
-    keccak.hash()
-  }
-}
+sealed trait Shake {
+  val HASH_SIZE: Int
 
-object Sha3_384 {
-  def hash(message: Array[Byte]): Array[Byte] = {
-    val keccak = new Keccak(48)
-    keccak.process(message)
-    keccak.hash()
-  }
-}
-
-object Sha3_512 {
-  def hash(message: Array[Byte]): Array[Byte] = {
-    val keccak = new Keccak(64)
-    keccak.process(message)
-    keccak.hash()
-  }
-}
-
-object Shake_128 {
   def hash(message: Array[Byte], outputLen: Int): Array[Byte] = {
-    val keccak = new Keccak(16)
-    keccak.process(message)
-    keccak.shake(outputLen)
+    val keccak = new Keccak(HASH_SIZE)
+    keccak.update(message, 0, message.length)
+    val hashed = new Array[Byte](outputLen)
+    keccak.finish(hashed, 0, outputLen)
+    hashed
   }
 }
 
-object Shake_256 {
-  def hash(message: Array[Byte], outputLen: Int): Array[Byte] = {
-    val keccak = new Keccak(32)
-    keccak.process(message)
-    keccak.shake(outputLen)
-  }
+object Sha3_224 extends Sha3 {
+  val HASH_SIZE: Int = 28
+}
+
+object Sha3_256 extends Sha3 {
+  val HASH_SIZE: Int = 32
+}
+
+object Sha3_384 extends Sha3 {
+  val HASH_SIZE: Int = 48
+}
+
+object Sha3_512 extends Sha3 {
+  val HASH_SIZE: Int = 64
+}
+
+object Shake_128 extends Shake {
+  val HASH_SIZE: Int = 16
+}
+
+object Shake_256 extends Shake {
+  val HASH_SIZE: Int = 32
 }

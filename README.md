@@ -29,11 +29,39 @@ The latest version is ![maven-central]
 API is pretty simple and quite limited :)
 ```
 scala> import ky.korins.sha._
+import ky.korins.sha._
 
 scala> Sha2_256.hash("abc".getBytes())
 val res1: Array[Byte] = Array(-70, 120, 22, -65, -113, 1, -49, -22, 65, 65, 64, -34, 93, -82, 34, 35, -80, 3, 97, -93, -106, 23, 122, -100, -76, 16, -1, 97, -14, 0, 21, -83)
 
 scala> 
 ```
+
+You may also create a new object from specified hash to `update` it, and at some
+point `finish` it like this:
+```
+scala> import ky.korins.sha._
+import ky.korins.sha._
+
+scala> val sha1 = new Sha1()
+val sha1: ky.korins.sha.Sha1 = ky.korins.sha.Sha1@1224e1b6
+
+scala> sha1.update("abc".getBytes(), 0, 2)
+
+scala> sha1.update("abc".getBytes(), 2, 1)
+
+scala> val hashed = new Array[Byte](20)
+val hashed: Array[Byte] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+scala> sha1.finish(hashed, 0)
+
+scala> hashed
+val res3: Array[Byte] = Array(-87, -103, 62, 54, 71, 6, -127, 106, -70, 62, 37, 113, 120, 80, -62, 108, -100, -48, -40, -99)
+
+scala> 
+```
+
+All these objects aren't thread safe. After `finish` it should be treated as
+broken.
 
 [maven-central]: https://img.shields.io/maven-central/v/ky.korins/sha_2.13?style=flat-square
