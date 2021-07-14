@@ -43,7 +43,7 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     headerLicense := LicenseDefinition.template,
     buildInfoPackage := "ky.korins.sha",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     )
   )
   .jvmSettings(
@@ -52,10 +52,31 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   )
   .jsSettings(
     scalaVersion := scala213,
-    crossScalaVersions := Seq(scala211, scala212, scala213, scala3),
+    crossScalaVersions := Seq(scala211, scala212, scala213, scala3)
   )
   .nativeSettings(
     scalaVersion := scala213,
     crossScalaVersions := Seq(scala211, scala212, scala213),
-    nativeLinkStubs := true,
+    nativeLinkStubs := true
   )
+
+lazy val bench = project
+  .in(file("bench"))
+  .dependsOn(sha.jvm)
+  .enablePlugins(AutomateHeaderPlugin)
+  .settings(
+    name := "blake3-bench",
+    publish / skip := true,
+    assembly / assemblyJarName := "bench.jar",
+    assembly / mainClass := Some("org.openjdk.jmh.Main"),
+    assembly / test := {},
+    headerLicense := LicenseDefinition.template,
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", "MANIFEST.MF") =>
+        MergeStrategy.discard
+      case _ =>
+        MergeStrategy.first
+    },
+    Jmh / assembly := (Jmh / assembly).dependsOn(Jmh / Keys.compile).value
+  )
+  .enablePlugins(JmhPlugin)

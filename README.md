@@ -64,4 +64,30 @@ scala>
 All these objects aren't thread safe. After `finish` it should be treated as
 broken.
 
+Anyway, I did a few benchmarks to compare this implementation with JVM one
+which was run on `JDK 11.0.11, OpenJDK 64-Bit Server VM, 11.0.11+9-LTS`:
+```
+Benchmark                 (len)  Mode  Cnt    Score   Error  Units
+ShaBenchmark.jvmSha1       1024  avgt    5    3,686 ± 0,005  us/op
+ShaBenchmark.jvmSha1      16384  avgt    5   55,556 ± 1,103  us/op
+ShaBenchmark.jvmSha256     1024  avgt    5    4,326 ± 0,012  us/op
+ShaBenchmark.jvmSha256    16384  avgt    5   61,924 ± 0,025  us/op
+ShaBenchmark.jvmSha3_256   1024  avgt    5    4,129 ± 0,045  us/op
+ShaBenchmark.jvmSha3_256  16384  avgt    5   61,627 ± 1,422  us/op
+ShaBenchmark.jvmSha3_512   1024  avgt    5    7,974 ± 0,091  us/op
+ShaBenchmark.jvmSha3_512  16384  avgt    5  111,711 ± 0,372  us/op
+ShaBenchmark.jvmSha512     1024  avgt    5    3,172 ± 0,001  us/op
+ShaBenchmark.jvmSha512    16384  avgt    5   44,205 ± 0,024  us/op
+ShaBenchmark.sha1          1024  avgt    5    4,285 ± 0,002  us/op
+ShaBenchmark.sha1         16384  avgt    5   64,380 ± 0,022  us/op
+ShaBenchmark.sha256        1024  avgt    5    4,330 ± 0,005  us/op
+ShaBenchmark.sha256       16384  avgt    5   63,293 ± 0,024  us/op
+ShaBenchmark.sha3_256      1024  avgt    5   14,963 ± 0,270  us/op
+ShaBenchmark.sha3_256     16384  avgt    5  178,224 ± 3,964  us/op
+ShaBenchmark.sha3_512      1024  avgt    5   22,308 ± 0,393  us/op
+ShaBenchmark.sha3_512     16384  avgt    5  276,056 ± 8,138  us/op
+ShaBenchmark.sha512        1024  avgt    5    3,168 ± 0,007  us/op
+ShaBenchmark.sha512       16384  avgt    5   44,630 ± 0,017  us/op
+```
+
 [maven-central]: https://img.shields.io/maven-central/v/ky.korins/sha_2.13?style=flat-square
