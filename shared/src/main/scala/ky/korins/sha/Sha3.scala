@@ -204,25 +204,37 @@ sealed trait Shake {
   }
 }
 
+class Sha3_224 extends Keccak(Sha3_224.HASH_SIZE)
+
 object Sha3_224 extends Sha3 {
   val HASH_SIZE: Int = 28
 }
+
+class Sha3_256 extends Keccak(Sha3_256.HASH_SIZE)
 
 object Sha3_256 extends Sha3 {
   val HASH_SIZE: Int = 32
 }
 
+class Sha3_384 extends Keccak(Sha3_384.HASH_SIZE)
+
 object Sha3_384 extends Sha3 {
   val HASH_SIZE: Int = 48
 }
+
+class Sha3_512 extends Keccak(Sha3_512.HASH_SIZE)
 
 object Sha3_512 extends Sha3 {
   val HASH_SIZE: Int = 64
 }
 
+class Shake_128 extends Keccak(Shake_128.HASH_SIZE)
+
 object Shake_128 extends Shake {
   val HASH_SIZE: Int = 16
 }
+
+class Shake_256 extends Keccak(Shake_256.HASH_SIZE)
 
 object Shake_256 extends Shake {
   val HASH_SIZE: Int = 32

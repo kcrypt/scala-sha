@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [unreleased]
+- Added missed SHA3 objects
 
 ## [1.1.0] - 2021-07-14
 - Implemented block hashing.
