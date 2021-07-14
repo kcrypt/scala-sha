@@ -12,7 +12,7 @@ scala-based application where hashing isn't the bottleneck. This code hasn't got
 any CPU related optimizations, nor multithreading features for Keccak / SHA-3.
 
 If you need very fast and secure hash function for scala I suggest to use
-[blake3](https://github.com/catap/scala-blake3).
+[blake3](https://github.com/catap/scala-blake3) which is 3 time faster.
 
 You can use it as
 ```
@@ -82,6 +82,15 @@ ShaBenchmark.sha3_512      1024  avgt    5    8,114 ± 0,078  us/op
 ShaBenchmark.sha3_512     16384  avgt    5  118,706 ± 0,924  us/op
 ShaBenchmark.sha512        1024  avgt    5    3,168 ± 0,007  us/op
 ShaBenchmark.sha512       16384  avgt    5   44,630 ± 0,017  us/op
+```
+for easy compare I've performed the same benchmark on blake3:
+
+```
+Benchmark                  (dataLen)  (hashLen)  Mode  Cnt   Score   Error  Units
+Blake3Benchmark.newHasher       1024        256  avgt    5   2,143 ± 0,037  us/op
+Blake3Benchmark.newHasher       1024        512  avgt    5   2,564 ± 0,019  us/op
+Blake3Benchmark.newHasher      16384        256  avgt    5  26,472 ± 0,023  us/op
+Blake3Benchmark.newHasher      16384        512  avgt    5  26,641 ± 0,131  us/op
 ```
 
 [maven-central]: https://img.shields.io/maven-central/v/ky.korins/sha_2.13?style=flat-square
