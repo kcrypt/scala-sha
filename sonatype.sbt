@@ -1,20 +1,20 @@
 import sbt.url
 import xerial.sbt.Sonatype.GitHubHosting
 
-sonatypeProfileName in ThisBuild := "ky.korins"
-publishMavenStyle in ThisBuild := true
-sonatypeProjectHosting in ThisBuild := Some(
+ThisBuild / sonatypeProfileName := "ky.korins"
+ThisBuild / publishMavenStyle := true
+ThisBuild / sonatypeProjectHosting := Some(
   GitHubHosting("catap", "scala-sha", "kirill@korins.ky")
 )
-licenses in ThisBuild := LicenseDefinition.licenses
-homepage in ThisBuild := Some(url("https://github.com/catap/scala-sha"))
-scmInfo in ThisBuild := Some(
+ThisBuild / licenses := LicenseDefinition.licenses
+ThisBuild / homepage := Some(url("https://github.com/catap/scala-sha"))
+ThisBuild / scmInfo := Some(
   ScmInfo(
     url("https://github.com/catap/scala-sha"),
     "scm:git@github.com:catap/scala-sha.git"
   )
 )
-developers in ThisBuild := List(
+ThisBuild / developers := List(
   Developer(
     id = "catap",
     name = "Kirill A. Korinsky",
