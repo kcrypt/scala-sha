@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [unreleased]
+- Switched to scalajs-1.7.0
 
 ## [1.2.0] - 2021-07-15
 - Improved performance of Keccak / SHA3
