@@ -11,7 +11,8 @@ package ky.korins.sha
 /**
  * This implementation is based on https://keccak.team/keccak_specs_summary.html
  *
- * Keccak is quite universal and requires the sate which I kept inside an object.
+ * Keccak is quite universal and requires the sate which I kept inside an
+ * object.
  */
 class Keccak(private var len: Int) extends Hash {
   import java.lang.Long.rotateLeft

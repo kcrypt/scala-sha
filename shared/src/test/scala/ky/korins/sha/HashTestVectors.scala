@@ -22,7 +22,8 @@ class HashTestVectors extends wordspec.AsyncWordSpec with should.Matchers {
    *
    * This mean that I skip the extremely-long message vector.
    *
-   * Also, SHA-0 and Shakes aren't a part of this test vector => I've computed it by hand.
+   * Also, SHA-0 and Shakes aren't a part of this test vector => I've computed
+   * it by hand.
    */
   "DI Management test vectors" when {
     "length 24 bits" in {
