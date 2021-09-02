@@ -20,10 +20,10 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2021-07-11
 - The first public release as dedicated project.
 
-[unreleased]: https://github.com/catap/scala-blake3/compare/v1.2.1...HEAD
-[1.2.1]: https://github.com/catap/scala-blake3/releases/tag/v1.2.1
-[1.2.0]: https://github.com/catap/scala-blake3/releases/tag/v1.2.0
-[1.1.1]: https://github.com/catap/scala-blake3/releases/tag/v1.1.1
-[1.1.0]: https://github.com/catap/scala-blake3/releases/tag/v1.1.0
-[1.0.0]: https://github.com/catap/scala-blake3/releases/tag/v1.0.0
+[unreleased]: https://github.com/catap/scala-sha/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/catap/scala-sha/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/catap/scala-sha/compare/v1.1.1...v1.2.0
+[1.1.1]: https://github.com/catap/scala-sha/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/catap/scala-sha/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/catap/scala-sha/releases/tagv1.0.0
 
