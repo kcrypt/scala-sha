@@ -11,7 +11,7 @@ lazy val scala31 = "3.1.0"
 lazy val scalatestVersion = "3.2.10"
 
 name := "sha"
-ThisBuild / organization := "ky.korins"
+ThisBuild / organization := "pt.kcry"
 
 ThisBuild / dynverSeparator := "-"
 
@@ -46,7 +46,7 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       }
     ),
     headerLicense := LicenseDefinition.template,
-    buildInfoPackage := "ky.korins.sha",
+    buildInfoPackage := "pt.kcry.sha",
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     )

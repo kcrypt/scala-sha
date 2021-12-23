@@ -16,14 +16,14 @@ If you need very fast and secure hash function for scala I suggest to use
 
 You can use it as
 ```
-libraryDependencies += "ky.korins" %%% "sha" % "x.x.x"
+libraryDependencies += "pt.kcry" %%% "sha" % "x.x.x"
 ```
 The latest version is ![maven-central]
 
 API is pretty simple and quite limited :)
 ```
-scala> import ky.korins.sha._
-import ky.korins.sha._
+scala> import pt.kcry.sha._
+import pt.kcry.sha._
 
 scala> Sha2_256.hash("abc".getBytes())
 val res1: Array[Byte] = Array(-70, 120, 22, -65, -113, 1, -49, -22, 65, 65, 64, -34, 93, -82, 34, 35, -80, 3, 97, -93, -106, 23, 122, -100, -76, 16, -1, 97, -14, 0, 21, -83)
@@ -34,11 +34,11 @@ scala>
 You may also create a new object from specified hash to `update` it, and at some
 point `finish` it like this:
 ```
-scala> import ky.korins.sha._
-import ky.korins.sha._
+scala> import pt.kcry.sha._
+import pt.kcry.sha._
 
 scala> val sha1 = new Sha1()
-val sha1: ky.korins.sha.Sha1 = ky.korins.sha.Sha1@1224e1b6
+val sha1: pt.kcry.sha.Sha1 = pt.kcry.sha.Sha1@1224e1b6
 
 scala> sha1.update("abc".getBytes(), 0, 2)
 
@@ -93,4 +93,4 @@ Blake3Benchmark.newHasher      16384        256  avgt    5  26,472 ± 0,023  us/
 Blake3Benchmark.newHasher      16384        512  avgt    5  26,641 ± 0,131  us/op
 ```
 
-[maven-central]: https://img.shields.io/maven-central/v/ky.korins/sha_2.13?style=flat-square
+[maven-central]: https://img.shields.io/maven-central/v/pt.kcry/sha_2.13?style=flat-square

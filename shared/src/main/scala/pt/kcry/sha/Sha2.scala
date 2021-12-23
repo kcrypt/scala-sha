@@ -3,10 +3,12 @@
  *
  * Written in 2020, 2021 by Kirill A. Korinsky <kirill@korins.ky>
  *
+ * Supported since 2022 by Kcrypt Lab UG <support@kcry.pt>
+ *
  * This work is released into the public domain with CC0 1.0.
  */
 
-package ky.korins.sha
+package pt.kcry.sha
 
 /**
  * Quite ugly but fast enough implementation of SHA-2 for 32 bit case.
@@ -15,6 +17,7 @@ package ky.korins.sha
  */
 sealed trait Sha2_32bit extends BlockedHash[Array[Int]] {
   import Sha2._
+
   import java.lang.Integer.rotateRight
 
   protected val H: Array[Int]
@@ -106,6 +109,7 @@ sealed trait Sha2_32bit extends BlockedHash[Array[Int]] {
  */
 sealed trait Sha2_64bit extends BlockedHash[Array[Long]] {
   import Sha2._
+
   import java.lang.Long.rotateRight
 
   protected val H: Array[Long]
