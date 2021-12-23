@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [unreleased]
+- Switched to scalajs-1.8.0
+- Switched to scala-native-0.4.2
+- Switched to scala-2.13.7
 
 ## [1.2.1] - 2021-08-06
 - Switched to scalajs-1.7.0
