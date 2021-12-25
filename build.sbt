@@ -53,7 +53,14 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   )
   .jvmSettings(
     scalaVersion := scala213,
-    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala30, scala31)
+    crossScalaVersions := Seq(
+      scala210,
+      scala211,
+      scala212,
+      scala213,
+      scala30,
+      scala31
+    )
   )
   .jsSettings(
     scalaVersion := scala213,
