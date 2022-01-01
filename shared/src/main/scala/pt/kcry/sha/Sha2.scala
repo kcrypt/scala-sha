@@ -55,11 +55,10 @@ sealed trait Sha2_32bit extends BlockedHash[Array[Int]] {
     }
 
     while (j < 64) {
-      val s0 = rotateRight(words(j - 15), 7) ^
-        rotateRight(words(j - 15), 18) ^ (words(j - 15) >>> 3)
-      val s1 =
-        rotateRight(words(j - 2), 17) ^
-          rotateRight(words(j - 2), 19) ^ (words(j - 2) >>> 10)
+      val s0 = rotateRight(words(j - 15), 7) ^ rotateRight(words(j - 15), 18) ^
+        (words(j - 15) >>> 3)
+      val s1 = rotateRight(words(j - 2), 17) ^ rotateRight(words(j - 2), 19) ^
+        (words(j - 2) >>> 10)
       words(j) = words(j - 16) + s0 + words(j - 7) + s1
       j += 1
     }
@@ -144,21 +143,18 @@ sealed trait Sha2_64bit extends BlockedHash[Array[Long]] {
       words(j) = 0
       var k = 0
       while (k < 8) {
-        words(j) |= ((block(
-          j * 8 + k + off
-        ) & 0x00000000000000ffL) << (56 - k * 8))
+        words(j) |=
+          ((block(j * 8 + k + off) & 0x00000000000000ffL) << (56 - k * 8))
         k += 1
       }
       j += 1
     }
 
     while (j < 80) {
-      val s0 =
-        rotateRight(words(j - 15), 1) ^
-          rotateRight(words(j - 15), 8) ^ (words(j - 15) >>> 7)
-      val s1 =
-        rotateRight(words(j - 2), 19) ^
-          rotateRight(words(j - 2), 61) ^ (words(j - 2) >>> 6)
+      val s0 = rotateRight(words(j - 15), 1) ^ rotateRight(words(j - 15), 8) ^
+        (words(j - 15) >>> 7)
+      val s1 = rotateRight(words(j - 2), 19) ^ rotateRight(words(j - 2), 61) ^
+        (words(j - 2) >>> 6)
       words(j) = words(j - 16) + s0 + words(j - 7) + s1
       j += 1
     }
@@ -249,10 +245,8 @@ private[sha] object Sha2 {
 }
 
 class Sha2_224 extends Sha2_32bit {
-  override protected val H: Array[Int] = Array(
-    0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939, 0xffc00b31, 0x68581511,
-    0x64f98fa7, 0xbefa4fa4
-  )
+  override protected val H: Array[Int] = Array(0xc1059ed8, 0x367cd507,
+    0x3070dd17, 0xf70e5939, 0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4)
 
   override protected val len: Int = 7
 }
@@ -270,10 +264,8 @@ object Sha2_224 {
 }
 
 class Sha2_256 extends Sha2_32bit {
-  override protected val H: Array[Int] = Array(
-    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c,
-    0x1f83d9ab, 0x5be0cd19
-  )
+  override protected val H: Array[Int] = Array(0x6a09e667, 0xbb67ae85,
+    0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19)
 
   override protected val len: Int = 8
 }

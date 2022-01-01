@@ -16,8 +16,8 @@ package pt.kcry.sha
  * This implementation also isn't thread safe.
  */
 class Sha0 extends Sha1 {
-  override protected def processBlockWord(j: Int): Int =
-    words(j - 3) ^ words(j - 8) ^ words(j - 14) ^ words(j - 16)
+  override protected def processBlockWord(j: Int): Int = words(j - 3) ^
+    words(j - 8) ^ words(j - 14) ^ words(j - 16)
 }
 
 object Sha0 {
