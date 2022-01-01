@@ -43,9 +43,7 @@ class Keccak(private var len: Int) extends Hash {
     S(i * 5 + j) ^= ((byt & 0xff).toLong << (8 * b))
     length += 1
 
-    if ((length % rate) == 0) {
-      transform()
-    }
+    if ((length % rate) == 0) transform()
   }
 
   @inline
@@ -171,13 +169,10 @@ class Keccak(private var len: Int) extends Hash {
 
   def squeeze(mask: Int, hashed: Array[Byte], off: Int, len: Int): Unit = {
     val q: Int = rate - (length % rate).toInt
-    if (q == 1) {
-      process(0x80 + mask)
-    } else {
+    if (q == 1) process(0x80 + mask)
+    else {
       process(mask)
-      while (length % rate != rate - 1) {
-        process(0x00)
-      }
+      while (length % rate != rate - 1) process(0x00)
       process(0x80)
     }
     squeeze(hashed = hashed, off = off, len = len)
@@ -200,9 +195,7 @@ class Keccak(private var len: Int) extends Hash {
           while (k < 8 && !done) {
             hashed(m + off) = (el & 0xff).toByte
             m += 1
-            if (m >= len || (m % rate) == 0) {
-              done = true
-            }
+            if (m >= len || (m % rate) == 0) done = true
             el >>>= 8
             k += 1
           }
@@ -211,9 +204,7 @@ class Keccak(private var len: Int) extends Hash {
         j += 1
       }
 
-      if (m < len) {
-        done = false
-      }
+      if (m < len) done = false
 
       transform()
     }
