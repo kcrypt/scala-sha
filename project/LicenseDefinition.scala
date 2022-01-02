@@ -14,5 +14,5 @@ object LicenseDefinition {
       |""".stripMargin))
 
   val licenses = Seq("CC0 1.0 Universal" ->
-      url("https://github.com/kcrypt/scala-sha/blob/master/LICENSE.txt"))
+    url("https://github.com/kcrypt/scala-sha/blob/master/LICENSE.txt"))
 }
