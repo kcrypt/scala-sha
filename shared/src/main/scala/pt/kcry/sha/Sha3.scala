@@ -161,8 +161,8 @@ class Keccak(private var len: Int) extends Hash {
     S(0) ^= 0x8000000080008008L
   }
 
-  def finish(hashed: Array[Byte], off: Int): Unit =
-    squeeze(mask = 0x06, hashed = hashed, off = off, len = len)
+  def finish(hashed: Array[Byte], off: Int): Unit = squeeze(mask = 0x06,
+    hashed = hashed, off = off, len = len)
 
   def finish(hashed: Array[Byte], off: Int, len: Int): Unit =
     squeeze(mask = 0x1f, hashed = hashed, off = off, len = len)

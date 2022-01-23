@@ -18,8 +18,8 @@ ThisBuild / dynverSeparator := "-"
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := Seq()
 
-ThisBuild / scalacOptions ++=
-  Seq("-target:jvm-1.8", "-unchecked", "-deprecation")
+ThisBuild / scalacOptions ++= Seq("-target:jvm-1.8", "-unchecked",
+  "-deprecation")
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
 
@@ -43,8 +43,8 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     libraryDependencies ++=
       Seq("org.scalatest" %%% "scalatest" % scalatestVersion % Test)
   ).jvmSettings(scalaVersion := scala213,
-    crossScalaVersions :=
-      Seq(scala210, scala211, scala212, scala213, scala30, scala31)
+    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala30,
+      scala31)
   ).jsSettings(scalaVersion := scala213,
     crossScalaVersions := Seq(scala211, scala212, scala213, scala30, scala31))
   .nativeSettings(scalaVersion := scala213,
