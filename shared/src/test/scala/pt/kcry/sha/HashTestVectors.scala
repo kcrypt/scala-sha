@@ -15,7 +15,7 @@ import org.scalatest.matchers.should
 
 import scala.language.implicitConversions
 
-class HashTestVectors extends wordspec.AsyncWordSpec with should.Matchers {
+class HashTestVectors extends wordspec.AnyWordSpec with should.Matchers {
 
   /**
    * Source of test vectors: https://www.di-mgt.com.au/sha_testvectors.html
