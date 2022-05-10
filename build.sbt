@@ -5,10 +5,9 @@ lazy val scala210 = "2.10.7"
 lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.15"
 lazy val scala213 = "2.13.8"
-lazy val scala30 = "3.0.2"
-lazy val scala31 = "3.1.1"
+lazy val scala31 = "3.1.2"
 
-lazy val scalatestVersion = "3.2.10"
+lazy val scalatestVersion = "3.2.12"
 
 name := "sha"
 ThisBuild / organization := "pt.kcry"
@@ -28,12 +27,6 @@ headerLicense := LicenseDefinition.template
 lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Full).enablePlugins(BuildInfoPlugin)
   .enablePlugins(AutomateHeaderPlugin).in(file(".")).settings(
-    // Don't publish for Scala 3.1 or later, only from 3.0
-    publish / skip :=
-      (CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, x)) if x > 0 => true
-        case _                     => false
-      }),
     Test / publishArtifact := false,
     buildInfoKeys := Seq(BuildInfoKey.action("commit") {
       scala.sys.process.Process("git rev-parse HEAD").!!.trim
@@ -43,12 +36,11 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     libraryDependencies ++=
       Seq("org.scalatest" %%% "scalatest" % scalatestVersion % Test)
   ).jvmSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala30,
-      scala31)
-  ).jsSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala211, scala212, scala213, scala30, scala31))
+    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala31))
+  .jsSettings(scalaVersion := scala213,
+    crossScalaVersions := Seq(scala211, scala212, scala213, scala31))
   .nativeSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala211, scala212, scala213),
+    crossScalaVersions := Seq(scala211, scala212, scala213, scala31),
     nativeLinkStubs := true)
 
 lazy val bench = project.in(file("bench")).dependsOn(sha.jvm)
