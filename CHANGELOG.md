@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [unreleased]
+
+## [2.0.1] - 2022-05-11
+- Switched to scalajs-1.10.0
+- Switched to scala-native-0.4.4
 - Switched to scala-3.1.2
 
 ## [2.0.0] - 2021-12-23
@@ -27,7 +31,8 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2021-07-11
 - The first public release as dedicated project.
 
-[unreleased]: https://github.com/kcrypt/scala-sha/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/kcrypt/scala-sha/compare/v2.0.1...HEAD
+[2.0.0]: https://github.com/kcrypt/scala-sha/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/kcrypt/scala-sha/compare/v1.2.1...v2.0.0
 [1.2.1]: https://github.com/kcrypt/scala-sha/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/kcrypt/scala-sha/compare/v1.1.1...v1.2.0
