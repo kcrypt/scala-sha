@@ -5,7 +5,7 @@ lazy val scala210 = "2.10.7"
 lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.19"
 lazy val scala213 = "2.13.13"
-lazy val scala31 = "3.4.0"
+lazy val scala3 = "3.4.0"
 
 lazy val scalatestVersion = "3.2.18"
 
@@ -36,11 +36,11 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     libraryDependencies ++=
       Seq("org.scalatest" %%% "scalatest" % scalatestVersion % Test)
   ).jvmSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala31))
+    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala3))
   .jsSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala212, scala213, scala31))
+    crossScalaVersions := Seq(scala212, scala213, scala3))
   .nativeSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala212, scala213, scala31),
+    crossScalaVersions := Seq(scala212, scala213, scala3),
     nativeLinkStubs := true)
 
 lazy val bench = project.in(file("bench")).dependsOn(sha.jvm)
