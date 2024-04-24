@@ -40,8 +40,7 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .jsSettings(scalaVersion := scala213,
     crossScalaVersions := Seq(scala212, scala213, scala3))
   .nativeSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala212, scala213, scala3),
-    nativeLinkStubs := true)
+    crossScalaVersions := Seq(scala212, scala213, scala3))
 
 lazy val bench = project.in(file("bench")).dependsOn(sha.jvm)
   .enablePlugins(AutomateHeaderPlugin).settings(
