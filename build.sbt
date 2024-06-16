@@ -17,8 +17,8 @@ ThisBuild / dynverSeparator := "-"
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := Seq()
 
-ThisBuild / scalacOptions ++= Seq("-target:jvm-1.8", "-unchecked",
-  "-deprecation")
+ThisBuild / scalacOptions ++=
+  Seq("-target:jvm-1.8", "-unchecked", "-deprecation")
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
 
@@ -28,19 +28,25 @@ lazy val sha = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Full).enablePlugins(BuildInfoPlugin)
   .enablePlugins(AutomateHeaderPlugin).in(file(".")).settings(
     Test / publishArtifact := false,
-    buildInfoKeys := Seq(BuildInfoKey.action("commit") {
-      scala.sys.process.Process("git rev-parse HEAD").!!.trim
-    }),
+    buildInfoKeys := Seq(
+      BuildInfoKey.action("commit") {
+        scala.sys.process.Process("git rev-parse HEAD").!!.trim
+      }
+    ),
     headerLicense := LicenseDefinition.template,
     buildInfoPackage := "pt.kcry.sha",
     libraryDependencies ++=
       Seq("org.scalatest" %%% "scalatest" % scalatestVersion % Test)
-  ).jvmSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala3))
-  .jsSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala212, scala213, scala3))
-  .nativeSettings(scalaVersion := scala213,
-    crossScalaVersions := Seq(scala212, scala213, scala3))
+  ).jvmSettings(
+    scalaVersion := scala213,
+    crossScalaVersions := Seq(scala210, scala211, scala212, scala213, scala3)
+  ).jsSettings(
+    scalaVersion := scala213,
+    crossScalaVersions := Seq(scala212, scala213, scala3)
+  ).nativeSettings(
+    scalaVersion := scala213,
+    crossScalaVersions := Seq(scala212, scala213, scala3)
+  )
 
 lazy val bench = project.in(file("bench")).dependsOn(sha.jvm)
   .enablePlugins(AutomateHeaderPlugin).settings(
